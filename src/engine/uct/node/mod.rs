@@ -89,16 +89,23 @@ impl Node {
     }
 
     pub fn expand(&mut self) {
-        //self.terminal = self.board.is_game_over();
-        //if !self.terminal {
+        self.terminal = self.board.is_game_over();
+        if !self.terminal {
             self.children = vec!();
             for &m in self.board.legal_moves_without_eyes().iter() {
                 let mut new_game = self.board.clone();
                 new_game.play(m).unwrap();
                 self.children.push(Node::new(new_game, m));
             }
-        //}
-        self.terminal = self.children.len() == 0;
+        }
+
+        if self.children.len() == 0 {
+            let mut new_game = self.board.clone();
+            let pass = Pass(self.board.next_player());
+            //new_game.play(pass).unwrap();
+            self.children.push(Node::new(new_game, pass));
+        }
+        
     }
 
     pub fn is_terminal(&self) -> bool {
