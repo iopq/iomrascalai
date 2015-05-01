@@ -230,21 +230,14 @@ impl Board {
                     if self.color(neighbour) != c {
                         return None; //two different colors
                     }
+                    
+                    if self.get_chain(*neighbour).unwrap().liberties().len() == 1 {
+                        return None; //stone in atari, we can connect or capture
+                    }
                 } else {
                     color = Some(self.color(neighbour));
                 }
             }
-        }
-        
-        let diagonals = self.diagonals(m.coord());
-        let is_eye = if diagonals.len() < 4 {
-            diagonals.iter().all(|c| self.color(c) != color.unwrap().opposite())
-        } else {
-            diagonals.iter().filter(|c| self.color(c) == color.unwrap().opposite()).count() <= 1
-        };
-        
-        if !is_eye {
-            return None;
         }
         
         candidate //return the open space or None if the conditions don't apply
